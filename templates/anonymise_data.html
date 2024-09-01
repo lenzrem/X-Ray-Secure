@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UOL Final Project - Anonymise Data</title>
+
+    <!-- Custom favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23FACC15'/><path d='M50 15 A35 35 0 0 1 85 50 L65 50 A15 15 0 0 0 50 35 Z' fill='%23000000'/><path d='M50 15 A35 35 0 0 1 85 50 L65 50 A15 15 0 0 0 50 35 Z' fill='%23000000' transform='rotate(120 50 50)'/><path d='M50 15 A35 35 0 0 1 85 50 L65 50 A15 15 0 0 0 50 35 Z' fill='%23000000' transform='rotate(240 50 50)'/></svg>" type="image/svg+xml">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-900">
+    {% include 'sidebar.html' %}
+    {% include 'topbar.html' %}
+
+    <div class="main-content">
+        <h1 class="text-2xl font-bold mb-4">Anonymise Data</h1>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Uploaded PDFs</h2>
+            <div id="pdfList" class="space-y-4">
+                <!-- PDF list will be populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for previewing anonymised data -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-xl font-semibold mb-4">Anonymised Data Preview</h2>
+            <pre id="previewContent" class="bg-gray-100 p-4 rounded overflow-auto max-h-96"></pre>
+        </div>
+    </div>
+
+    <!-- Feedback modal for user notifications -->
+    <div id="feedbackModal" class="feedback-modal">
+        <div id="feedbackIcon" class="feedback-icon"></div>
+        <div class="feedback-content">
+            <div id="feedbackTitle" class="feedback-title"></div>
+            <div id="feedbackMessage" class="feedback-message"></div>
+        </div>
+        <div class="feedback-close" onclick="closeFeedback()">&times;</div>
+    </div>
+
+    <script>
+        // Navigation function
+        function changePage(page) {
+            window.location.href = '/' + page;
+        }
+
+        // Highlight active sidebar item
+        function setActiveSidebarItem() {
+            const currentPage = window.location.pathname.split('/').pop() || 'index';
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                const itemPage = item.textContent.toLowerCase().replace(' ', '_');
+                item.classList.toggle('active', itemPage === currentPage);
+            });
+        }
+
+        // Fetch and display uploaded PDFs
+        async function loadPDFs() {
+            try {
+                const response = await axios.get('/get_uploaded_pdfs');
+                const pdfList = document.getElementById('pdfList');
+                pdfList.innerHTML = '';
+                
+                if (response.data.uploaded_pdfs && response.data.uploaded_pdfs.length > 0) {
+                    for (const pdf of response.data.uploaded_pdfs) {
+                        const isAnonymised = await checkIfAnonymised(pdf);
+                        const pdfItem = createPDFListItem(pdf, isAnonymised);
+                        pdfList.appendChild(pdfItem);
+                    }
+                } else {
+                    pdfList.innerHTML = '<p>No PDFs uploaded yet.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading PDFs:', error);
+                showError('Error', 'Failed to load PDFs. Please try again.');
+            }
+        }
+
+        // Check if a PDF has been anonymised
+        async function checkIfAnonymised(filename) {
+            try {
+                const response = await axios.get(`/check_anonymized/${filename}`);
+                return response.data.is_anonymized;
+            } catch (error) {
+                console.error('Error checking if file is anonymised:', error);
+                return false;
+            }
+        }
+
+        // Create a list item for a PDF
+        function createPDFListItem(pdf, isAnonymised) {
+            const pdfItem = document.createElement('div');
+            pdfItem.className = 'flex flex-col sm:flex-row justify-between items-center bg-gray-100 p-4 rounded';
+            
+            pdfItem.innerHTML = `
+                <div class="flex items-center mb-2 sm:mb-0">
+                    <i class="fas fa-file-pdf text-red-500 mr-2 text-2xl"></i>
+                    <span>${pdf}</span>
+                </div>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <button onclick="${isAnonymised ? `previewAnonymisedPDF('${pdf}')` : `anonymisePDF('${pdf}', this)`}" 
+                            class="${isAnonymised ? 'bg-green-500 hover:bg-green-700' : 'bg-blue-500 hover:bg-blue-700'} text-white font-bold py-2 px-4 rounded">
+                        ${isAnonymised ? 'Preview Anonymised File' : 'Anonymise'}
+                    </button>
+                    <button onclick="deletePDF('${pdf}')" class="remove-file text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            `;
+            return pdfItem;
+        }
+
+        // Delete a PDF file
+        async function deletePDF(filename) {
+            if (confirm(`Are you sure you want to delete ${filename}?`)) {
+                try {
+                    const response = await axios.delete(`/remove_pdf/${filename}`);
+                    if (response.status === 200) {
+                        showSuccess('File Deleted', `${filename} has been successfully deleted.`);
+                        loadPDFs();
+                    } else {
+                        showError('Deletion Failed', `Failed to delete ${filename}. Please try again.`);
+                    }
+                } catch (error) {
+                    console.error('Error deleting PDF:', error);
+                    showError('Deletion Failed', `An error occurred while deleting ${filename}. Please try again.`);
+                }
+            }
+        }
+
+        // Anonymise a PDF file
+        async function anonymisePDF(filename, button) {
+            const originalText = button.textContent;
+            button.innerHTML = '<div class="spinner"></div>Anonymising...';
+            button.disabled = true;
+
+            try {
+                const response = await axios.post('/anonymize_pdf', { filename: filename });
+                showSuccess('Anonymisation Complete', `${filename} has been successfully anonymised.`);
+                
+                button.textContent = 'Preview Anonymised File';
+                button.className = 'bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded';
+                button.onclick = function() { previewAnonymisedPDF(filename); };
+            } catch (error) {
+                console.error('Error anonymising PDF:', error);
+                showError('Anonymisation Failed', `Failed to anonymise ${filename}. Please try again.`);
+                button.textContent = originalText;
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Display feedback to the user
+        function showFeedback(icon, title, message, isError = false) {
+            const modal = document.getElementById('feedbackModal');
+            const iconElement = document.getElementById('feedbackIcon');
+            const titleElement = document.getElementById('feedbackTitle');
+            const messageElement = document.getElementById('feedbackMessage');
+
+            iconElement.innerHTML = icon;
+            titleElement.textContent = title;
+            messageElement.textContent = message;
+
+            modal.style.backgroundColor = isError ? '#c0392b' : '#27ae60';
+            iconElement.style.color = '#ffffff';
+
+            modal.classList.add('show');
+
+            setTimeout(closeFeedback, 5000);
+        }
+
+        // Show success feedback
+        function showSuccess(title, message) {
+            showFeedback('<i class="fas fa-check-circle"></i>', title, message);
+        }
+
+        // Show error feedback
+        function showError(title, message) {
+            showFeedback('<i class="fas fa-exclamation-circle"></i>', title, message, true);
+        }
+
+        // Close feedback modal
+        function closeFeedback() {
+            document.getElementById('feedbackModal').classList.remove('show');
+        }
+
+        // Preview anonymised PDF content
+        async function previewAnonymisedPDF(filename) {
+            const previewModal = document.getElementById('previewModal');
+            const previewContent = document.getElementById('previewContent');
+            previewContent.textContent = 'Loading preview...';
+            previewModal.style.display = 'block';
+
+            try {
+                const response = await axios.get(`/preview_anonymized_pdf/${filename}`);
+                previewContent.textContent = response.data.preview;
+            } catch (error) {
+                console.error('Error previewing anonymised PDF:', error);
+                previewContent.textContent = 'Failed to load preview. Please try again.';
+            }
+        }
+
+        // Modal close functionality
+        const modal = document.getElementById('previewModal');
+        const span = document.getElementsByClassName('close')[0];
+
+        span.onclick = () => modal.style.display = 'none';
+        window.onclick = (event) => {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveSidebarItem();
+            loadPDFs();
+        });
+    </script>
+</body>
+</html>

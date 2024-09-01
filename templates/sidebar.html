@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* Custom styles for sidebar */
+        .custom-sidebar-bg {
+            background-color: rgb(24, 102, 140) !important;
+        }
+        .sidebar-hidden {
+            transform: translateX(-100%);
+        }
+        .main-content {
+            margin-left: 16rem;
+            transition: margin-left 0.3s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar navigation -->
+    <nav id="sidebar" class="sidebar custom-sidebar-bg text-white w-64 h-screen fixed left-0 overflow-y-auto transition-all duration-300 ease-in-out p-5">
+        <h2 class="text-2xl font-bold mb-8 text-center"></h2>
+        <ul class="space-y-2">
+            <li>
+                <a href="/" class="sidebar-item flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-[#01204E] group">
+                    <i class="fas fa-home w-6 text-lg group-hover:text-[#FAA968] transition-colors duration-200"></i>
+                    <span class="group-hover:text-[#FAA968] transition-colors duration-200">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/load_data" class="sidebar-item flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-[#01204E] group">
+                    <i class="fas fa-upload w-6 text-lg group-hover:text-[#FAA968] transition-colors duration-200"></i>
+                    <span class="group-hover:text-[#FAA968] transition-colors duration-200">Load Data</span>
+                </a>
+            </li>
+            <li>
+                <a href="/anonymise_data" class="sidebar-item flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-[#01204E] group">
+                    <i class="fas fa-user-secret w-6 text-lg group-hover:text-[#FAA968] transition-colors duration-200"></i>
+                    <span class="group-hover:text-[#FAA968] transition-colors duration-200">Anonymise Data</span>
+                </a>
+            </li>
+            <li>
+                <a href="/security_questions" class="sidebar-item flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-[#01204E] group">
+                    <i class="fas fa-shield-alt w-6 text-lg group-hover:text-[#FAA968] transition-colors duration-200"></i>
+                    <span class="group-hover:text-[#FAA968] transition-colors duration-200 whitespace-nowrap">Security Questions</span>
+                </a>
+            </li>
+            <li>
+                <a href="/result" class="sidebar-item flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-[#01204E] group">
+                    <i class="fas fa-chart-bar w-6 text-lg group-hover:text-[#FAA968] transition-colors duration-200"></i>
+                    <span class="group-hover:text-[#FAA968] transition-colors duration-200">Results</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.querySelector('.fa-bars').closest('button');
+            const mainContent = document.querySelector('.main-content');
+            let sidebarVisible = true;
+
+            // Toggle sidebar visibility
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebarVisible = !sidebarVisible;
+                    sidebar.classList.toggle('sidebar-hidden');
+                    
+                    // Adjust main content margin
+                    mainContent.style.marginLeft = sidebarVisible ? '16rem' : '0';
+                });
+            }
+            
+            // Highlight active sidebar item
+            const currentPath = window.location.pathname;
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            
+            sidebarItems.forEach(item => {
+                if (item.getAttribute('href') === currentPath) {
+                    item.classList.add('bg-[#F85525]', 'text-white');
+                    item.classList.remove('hover:bg-[#01204E]', 'group-hover:text-[#FAA968]');
+                    
+                    const icon = item.querySelector('i');
+                    const text = item.querySelector('span');
+                    
+                    icon.classList.add('text-white');
+                    icon.classList.remove('group-hover:text-[#FAA968]');
+                    
+                    text.classList.add('font-semibold');
+                    text.classList.remove('group-hover:text-[#FAA968]');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

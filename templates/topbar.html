@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topbar</title>
+
+    <!-- Custom favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* Animated gradient background for topbar */
+        @keyframes gradientAnimation {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+
+        .topbar {
+            background-size: 200% 200%;
+            background-image: linear-gradient(to right, rgb(6, 57, 77), rgb(8, 77, 102));
+            animation: gradientAnimation 15s ease infinite;
+        }
+
+        /* Pulsating animation for logo icon */
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar component -->
+    <div class="topbar bg-gradient-to-r from-[rgb(6,57,77)] to-[rgb(8,77,102)] text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Left section: Toggle button and logo -->
+            <div class="flex items-center space-x-4">
+                <button id="sidebarToggle" class="text-white focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="logo flex items-center space-x-2">
+                    <i class="fas fa-radiation-alt logo-icon text-2xl text-yellow-400 animate-pulse"></i>
+                    <span class="logo-text text-xl font-bold">X-Ray Secure</span>
+                </div>
+            </div>
+            
+            <!-- Right section: Search, notifications, and user profile -->
+            <div class="flex items-center space-x-6">
+                <!-- Search input -->
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="bg-white bg-opacity-20 rounded-full py-1 px-4 focus:outline-none focus:ring-2 focus:ring-white focus:bg-opacity-30 transition duration-300">
+                    <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-300"></i>
+                </div>
+                
+                <!-- Notifications dropdown -->
+                <div class="relative group">
+                    <button class="text-white focus:outline-none">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block transition duration-300">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Results are available</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your report is ready</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">System update available</a>
+                    </div>
+                </div>
+                
+                <!-- User profile dropdown -->
+                <div class="relative group">
+                    <div class="user-profile flex items-center space-x-2 cursor-pointer">
+                        <img src="{{ url_for('static', path='images/profile_picture.jpg') }}" alt="Eric Cartmenez profile" class="w-8 h-8 rounded-full border-2 border-white object-cover">
+                        <span class="text-sm font-medium">Eric Cartmenez</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block transition duration-300">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-user mr-2"></i> Profile
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-cog mr-2"></i> Settings
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

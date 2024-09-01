@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.egg-info/
+.env
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# FastAPI
+__pycache__/
+*.pyc
+
+# Tailwind CSS
+/static/css/main.css
+
+# Uploads
+uploads/
+
+# Miscellaneous
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.seed
+*.pid.lock

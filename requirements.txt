@@ -1,0 +1,17 @@
+# Install required packages
+# FastAPI: Web framework for building APIs
+# uvicorn: ASGI server for running FastAPI applications
+# python-multipart: Multipart form data parsing
+# pydantic: Data validation and settings management
+# transformers: NLP library for state-of-the-art models
+# torch: Deep learning framework
+# datasets: Dataset handling and processing
+# scikit-learn: Machine learning library
+# passlib: Password hashing library
+# python-jose: JSON Web Token implementation
+# cachetool: Caching utility
+python -m pip install --upgrade fastapi uvicorn python-multipart pydantic transformers torch datasets scikit-learn passlib python-jose cachetool
+
+# Additional packages for specific functionalities
+httpx  # HTTP client for making API requests
+SPARQLwrapper  # SPARQL query interface for question generation

@@ -1,0 +1,19 @@
+What responsibilities do users have when using the service?
+
+How does the service provider protect user content, and what permissions are granted for accessing this content?
+
+What actions does the service provider take to enforce its Acceptable Use Policy?
+
+What security measures must users take to protect their accounts?
+
+What happens if a user violates the Terms of Service?
+
+How does the service provider handle software updates, and what restrictions apply to users regarding the software?
+
+What is the provider’s approach to beta services, and how is the confidentiality of these services protected?
+
+What are the legal and liability limitations regarding the use of the service?
+
+How are disputes between users and the service provider resolved, particularly with respect to arbitration and jurisdiction?
+
+Under what conditions may the service provider terminate a user’s account or access to services?

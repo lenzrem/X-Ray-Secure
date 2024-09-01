@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UOL Final Project - Result</title>
+
+    <!-- Custom favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23FACC15'/><path d='M50 15 A35 35 0 0 1 85 50 L65 50 A15 15 0 0 0 50 35 Z' fill='%23000000'/><path d='M50 15 A35 35 0 0 1 85 50 L65 50 A15 15 0 0 0 50 35 Z' fill='%23000000' transform='rotate(120 50 50)'/><path d='M50 15 A35 35 0 0 1 85 50 L65 50 A15 15 0 0 0 50 35 Z' fill='%23000000' transform='rotate(240 50 50)'/></svg>" type="image/svg+xml">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/tailwindstyles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{ url_for('static', path='js/result.js') }}"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-900">
+    <!-- Navigation components -->
+    {% include 'sidebar.html' %}
+    {% include 'topbar.html' %}
+  
+    <!-- Main content area -->
+    <div class="main-content">
+        <h1 class="text-2xl font-bold mb-4">Analysis Results</h1>
+        <!-- Button to clear analysis results -->
+        <button id="clearResultsBtn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-4">
+            Clear Results
+        </button>
+        <!-- Container for dynamically inserted results -->
+        <div id="results-container" class="bg-white p-6 rounded-lg shadow-md">
+            <!-- Results will be dynamically inserted here -->
+        </div>
+    </div>
+</body>
+</html>

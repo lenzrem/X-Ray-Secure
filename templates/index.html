@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-Ray-Secure - Document Anonymisation and Security Analysis</title>
+
+    <!-- Custom favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23FACC15'/><path d='M50 15 A35 35 0 0 1 85 50 L65 50 A15 15 0 0 0 50 35 Z' fill='%23000000'/><path d='M50 15 A35 35 0 0 1 85 50 L65 50 A15 15 0 0 0 50 35 Z' fill='%23000000' transform='rotate(120 50 50)'/><path d='M50 15 A35 35 0 0 1 85 50 L65 50 A15 15 0 0 0 50 35 Z' fill='%23000000' transform='rotate(240 50 50)'/></svg>" type="image/svg+xml">
+
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 font-sans">
+    {% include 'sidebar.html' %}
+    {% include 'topbar.html' %}
+    
+    <div class="main-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-4xl font-bold mb-8 text-center text-gray-900">X-Ray-Secure</h1>
+
+        <!-- Process flow visualisation -->
+        <div class="bg-white shadow-lg rounded-lg p-6 mb-12">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Our Process</h2>
+            <div class="flex flex-wrap justify-center items-center gap-4">
+                {% for step in [
+                    {'icon': 'fa-upload', 'title': 'Load Data', 'description': 'Upload PDF files'},
+                    {'icon': 'fa-user-secret', 'title': 'Anonymise Data', 'description': 'Protect sensitive info'},
+                    {'icon': 'fa-shield-alt', 'title': 'Security Questions', 'description': 'Analyse security'},
+                    {'icon': 'fa-chart-bar', 'title': 'View Results', 'description': 'Check insights'}
+                ] %}
+                    <div class="flex flex-col items-center p-4 bg-gray-100 rounded-lg w-48">
+                        <div class="text-3xl text-gray-600 mb-2"><i class="fas {{ step.icon }}"></i></div>
+                        <div class="font-semibold text-lg mb-1">{{ step.title }}</div>
+                        <div class="text-sm text-gray-600">{{ step.description }}</div>
+                    </div>
+                    {% if not loop.last %}
+                        <div class="text-gray-600 text-2xl">→</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Detailed process description -->
+        <div class="bg-white shadow-lg rounded-lg p-8">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-900">Document Anonymisation and Security Analysis</h2>
+            <p class="mb-6 text-gray-700">Welcome to X-Ray-Secure, your solution for document anonymisation and security analysis. Follow these steps to protect sensitive information and enhance data security:</p>
+            
+            <div class="space-y-8">
+                {% for step in [
+                    {'title': 'Load Your Data', 'items': [
+                        'Navigate to the \'Upload\' section.',
+                        'Click on the \'Upload\' button or drag and drop your PDF files into the designated area.',
+                        'Wait for the upload to complete before proceeding.'
+                    ]},
+                    {'title': 'Anonymise Your Data', 'items': [
+                        'Once your documents are uploaded, select the \'Anonymise\' option.',
+                        'Choose the level of anonymisation you require (e.g., basic, advanced).',
+                        'Click \'Start Anonymisation\' and allow the system to process your documents.',
+                        'This step removes or obscures personally identifiable information (PII) and other sensitive data.'
+                    ]},
+                    {'title': 'Answer Security Questions', 'items': [
+                        'After anonymisation, you\'ll be presented with a series of security questions.',
+                        'Answer each question thoughtfully, considering the content of your documents.',
+                        'These questions help identify any remaining PII, organisations, or addresses.',
+                        'Click \'Submit\' when you\'ve completed all questions.'
+                    ]},
+                    {'title': 'View Your Results', 'items': [
+                        'Once the analysis is complete, you\'ll be directed to the \'Results\' page.',
+                        'Here, you can view:',
+                        ['A summary of the anonymisation process',
+                         'Responses to security questions',
+                         'Visualisations of key data points',
+                         'Any flagged areas that may require further attention']
+                    ]}
+                ] %}
+                    <div class="bg-gray-100 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">{{ loop.index }}. {{ step.title }}</h3>
+                        <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                            {% for item in step['items'] %}
+                                {% if item is string %}
+                                    <li>{{ item }}</li>
+                                {% else %}
+                                    <li>
+                                        <ul class="list-circle pl-6 mt-2 space-y-1">
+                                            {% for subitem in item %}
+                                                <li>{{ subitem }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-8 p-6 bg-yellow-50 rounded-lg">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-600">Important Notes:</h3>
+                <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                    <li>Ensure all documents are in PDF format before uploading.</li>
+                    <li>The anonymisation process is thorough, but always double-check the results.</li>
+                    <li>If you need to make changes, you can re-upload documents and restart the process.</li>
+                    <li>For any issues or queries, please contact our support team via the 'Help' section.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle page navigation
+        function changePage(page) {
+            window.location.href = '/' + page;
+        }
+    </script>
+</body>
+</html>
