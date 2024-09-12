@@ -39,17 +39,17 @@ class ProcessQuestionsRequest(BaseModel):
     api_key: str
     questions: List[str]
 
-# File handling functions
-def load_uploaded_files():
-    try:
-        with open("uploads/uploaded_files.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {"uploaded_pdfs": []}
+# # File handling functions
+# def load_uploaded_files():
+#     try:
+#         with open("uploads/uploaded_files.json", "r") as f:
+#             return json.load(f)
+#     except FileNotFoundError:
+#         return {"uploaded_pdfs": []}
 
-def save_uploaded_files(data):
-    with open("uploads/uploaded_files.json", "w") as f:
-        json.dump(data, f)
+# def save_uploaded_files(data):
+#     with open("uploads/uploaded_files.json", "w") as f:
+#         json.dump(data, f)
 
 def load_security_questions():
     with open("security_questions.txt", "r") as f:
@@ -63,30 +63,29 @@ async def read_root(request: Request):
 @app.get("/load_data", response_class=HTMLResponse)
 async def load_data(request: Request):
     logger.info("Accessing /load_data endpoint")
-    return templates.TemplateResponse("load_data.html", {"request": request})
+    upload_dir = 'uploads'
+    uploaded_files = [f for f in os.listdir(upload_dir) if f.endswith(('.pdf', '.eml', '.msg'))]
+    logger.info(f"Files found in uploads directory: {uploaded_files}")
+    return templates.TemplateResponse("load_data.html", {"request": request, "uploaded_files": uploaded_files})
 
 @app.post("/upload_pdf")
 async def upload_pdf(file: UploadFile = File(...)):
     logger.info(f"Uploading file: {file.filename}")
-    if not file.filename.lower().endswith('.pdf'):
-        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+    if not file.filename.lower().endswith(('.pdf', '.eml', '.msg')):
+        raise HTTPException(status_code=400, detail="Only PDF, EML, and MSG files are allowed")
     
     file_location = f"uploads/{file.filename}"
     with open(file_location, "wb+") as file_object:
         file_object.write(file.file.read())
-    
-    uploaded_files = load_uploaded_files()
-    if file.filename not in uploaded_files["uploaded_pdfs"]:
-        uploaded_files["uploaded_pdfs"].append(file.filename)
-        save_uploaded_files(uploaded_files)
     
     return {"message": f"Successfully uploaded {file.filename}"}
 
 @app.get("/get_uploaded_pdfs")
 async def get_uploaded_pdfs():
     logger.info("Getting uploaded PDFs")
-    uploaded_files = load_uploaded_files()
-    return uploaded_files
+    upload_dir = 'uploads'
+    uploaded_files = [f for f in os.listdir(upload_dir) if f.endswith(('.pdf', '.eml', '.msg'))]
+    return {"uploaded_pdfs": uploaded_files}
 
 @app.get("/get_anonymized_files")
 async def get_anonymized_files():
@@ -97,15 +96,11 @@ async def get_anonymized_files():
 @app.delete("/remove_pdf/{filename}")
 async def remove_pdf(filename: str):
     logger.info(f"Removing file: {filename}")
-    uploaded_files = load_uploaded_files()
     
     original_path = f"uploads/{filename}"
     if os.path.exists(original_path):
         os.remove(original_path)
         logger.info(f"Removed original file: {original_path}")
-        if filename in uploaded_files["uploaded_pdfs"]:
-            uploaded_files["uploaded_pdfs"].remove(filename)
-            save_uploaded_files(uploaded_files)
     
     anonymized_path = f"uploads/anonymized/anonymized_{filename}"
     if os.path.exists(anonymized_path):
@@ -143,8 +138,10 @@ async def check_anonymized(filename: str):
 
 @app.get("/anonymise_data", response_class=HTMLResponse)
 async def anonymise_data(request: Request):
-    uploaded_files = load_uploaded_files()
-    return templates.TemplateResponse("anonymise_data.html", {"request": request, "uploaded_pdfs": uploaded_files["uploaded_pdfs"]})
+    logger.info("Accessing /anonymise_data endpoint")
+    upload_dir = 'uploads'
+    uploaded_files = [f for f in os.listdir(upload_dir) if f.endswith(('.pdf', '.eml', '.msg'))]
+    return templates.TemplateResponse("anonymise_data.html", {"request": request, "uploaded_pdfs": uploaded_files})
 
 @app.post("/anonymize_pdf")
 async def anonymize_pdf_route(request: Request):
@@ -226,7 +223,14 @@ async def view_pdf(filename: str):
 @app.get("/security_questions", response_class=HTMLResponse)
 async def security_questions(request: Request):
     questions = load_security_questions()
-    return templates.TemplateResponse("security_questions.html", {"request": request, "questions": questions})
+    anonymized_dir = 'uploads/anonymized'
+    anonymized_files = [f for f in os.listdir(anonymized_dir) if f.endswith('.pdf')]
+    print(f"Anonymized files found: {anonymized_files}") 
+    return templates.TemplateResponse("security_questions.html", {
+        "request": request, 
+        "questions": questions,
+        "anonymized_files": anonymized_files
+    })
 
 @app.post("/process_questions")
 async def process_questions(request: ProcessQuestionsRequest, background_tasks: BackgroundTasks):
